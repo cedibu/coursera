@@ -1,6 +1,148 @@
+import java.util.ArrayList;
+
 /*******************************************
  * Completez le programme a partir d'ici.
  *******************************************/
+class Piece {
+	private String nom;
+	
+	public Piece(String nom) {
+		this.nom = nom;
+	}
+
+	public String getNom() {
+		return nom;
+	}
+	
+	@Override
+	public String toString() {
+		return getNom();
+	}
+}
+
+class Simple extends Piece {
+	private String orientation;
+	
+	public Simple(String nom) {
+		this(nom, "aucune");
+	}
+	
+	public Simple(String nom, String orientation) {
+		super(nom);
+		this.orientation = orientation;
+	}
+	
+	public String getOrientation() {
+		return orientation;
+	}
+	
+	@Override
+	public String toString() {
+		if ("aucune".equals(getOrientation())) {
+			return super.toString();
+		} else {
+			return super.toString()+" "+getOrientation();
+		}
+	}
+}
+
+class Composee extends Piece {
+	private ArrayList<Piece> pieces;
+	private int tailleMax;
+	
+	public Composee(String nom, int tailleMax) {
+		super(nom);
+		this.tailleMax = tailleMax;
+		pieces = new ArrayList<Piece>();		
+	}
+	
+	public int taille() {
+		return pieces.size();
+	}
+	
+	public int tailleMax() {
+		return tailleMax;
+	}
+
+	public void construire(Piece piece) {
+		if (taille() < tailleMax()) {
+			pieces.add(piece);
+		} else {
+			System.out.println("Construction impossible");
+		}
+	}
+	
+	@Override
+	public String toString() {
+		String toString = getNom()+" (";
+		
+		for (int i = 0; i < pieces.size(); i++) {
+			Piece piece = pieces.get(i);
+			toString += piece;
+			if (i < pieces.size()-1) {
+				toString += ",";
+			}
+		}
+		toString += ")";
+		return toString;
+	}
+}
+
+class Composant {
+	private Piece piece;
+	private int quantite;
+	
+	public Composant(Piece piece, int quantite) {
+		this.piece = piece;
+		this.quantite = quantite;
+	}
+	
+	public Piece getPiece() {
+		return piece;
+	}
+	
+	public int getQuantite() {
+		return quantite;
+	}
+}
+
+class Construction {
+	private ArrayList<Composant> listeComposants;
+	private int tailleMax;
+	
+	public Construction(int tailleMax) {
+		listeComposants = new ArrayList<Composant>();
+		this.tailleMax = tailleMax;
+	}
+	
+	public int taille() {
+		return listeComposants.size();
+	}
+	
+	public int tailleMax() {
+		return tailleMax;
+	}
+
+	public void ajouterComposant(Piece piece, int quantite) {
+		if (taille() < tailleMax()) {
+			Composant composant = new Composant(piece, quantite);
+			listeComposants.add(composant);
+		} else {
+			System.out.println("Ajout de composant impossible");
+		}
+	}
+	
+	@Override
+	public String toString() {
+		String toString = "";
+		
+		for (Composant composant : listeComposants) {
+			toString += composant.getPiece()+" (quantite "+composant.getQuantite()+")\n";
+		}
+		
+		return toString;
+	}
+}
 
 /*******************************************
  * Ne rien modifier apres cette ligne.
