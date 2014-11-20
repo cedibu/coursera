@@ -1,6 +1,172 @@
+import java.util.ArrayList;
+import java.util.Collections;
+
 /*******************************************
  * Completez le programme a partir d'ici.
  *******************************************/
+class Vehicule implements Comparable<Vehicule> {
+	private String nom;
+	private double vitesseMax;
+	private int poids;
+	private int carburant;
+	
+	public Vehicule(String nom, double vitesseMax, int poids, int carburant) {
+		this.nom = nom;
+		this.vitesseMax = vitesseMax;
+		this.poids = poids;
+		this.carburant = carburant;
+	}
+	
+	public Vehicule() {
+		this("Anonyme", 130.00, 1000, 0);
+	}
+	
+	@Override
+	public String toString() {
+		return getNom()+" -> vitesse max = "+getVitesseMax()+" km/h, poids = "+getPoids()+" kg";
+	}
+	
+	public double performance() {
+		return getVitesseMax() / getPoids();
+	}
+	
+	public boolean meilleur(Vehicule autreVehicule) {
+		return this.performance() > autreVehicule.performance();
+	}
+	
+	public String getNom() {
+		return nom;
+	}
+	public double getVitesseMax() {
+		return vitesseMax;
+	}
+	public int getPoids() {
+		return poids;
+	}
+	public int getCarburant() {
+		return carburant;
+	}
+	
+	public boolean estDeuxRoues() {
+		return false;
+	}
+
+	@Override
+	public int compareTo(Vehicule o) {
+		if (this.meilleur(o)) {
+			return -1;
+		} else if (o.meilleur(this)) {
+			return 1;
+		} else {
+			return 0;
+		}
+	}
+	
+}
+
+class Voiture extends Vehicule{
+	private String categorie;
+	
+	public Voiture(String nom, double vitesseMax, int poids, int carburant, String categorie) {
+		super(nom, vitesseMax, poids, carburant);
+		this.categorie = categorie;
+	}
+
+	@Override
+	public String toString() {
+		return super.toString()+", Voiture de "+getCategorie();
+	}
+
+	public String getCategorie() {
+		return categorie;
+	}
+
+	@Override
+	public boolean estDeuxRoues() {
+		return super.estDeuxRoues();
+	}
+}
+class Moto extends Vehicule {
+	private boolean hasSideCar;
+	
+	public Moto(String nom, double vitesseMax, int poids, int carburant, boolean hasSideCar) {
+		super(nom, vitesseMax, poids, carburant);
+		this.hasSideCar = hasSideCar;
+	}
+	
+	
+	public boolean isHasSideCar() {
+		return hasSideCar;
+	}
+
+	public Moto(String nom, double vitesseMax, int poids, int carburant) {
+		this(nom, vitesseMax, poids, carburant, false);
+	}
+
+	@Override
+	public String toString() {
+		String str = ", Moto";
+		if (isHasSideCar()) {
+			str +=", avec sidecar";
+		}
+		return super.toString()+str;
+	}
+
+	@Override
+	public boolean estDeuxRoues() {
+		return !isHasSideCar();
+	}
+	
+}
+
+class GrandPrix extends Rallye {
+	private ArrayList<Vehicule> participants = new ArrayList<Vehicule>();
+
+	public void ajouter(Vehicule vehicule) {
+		participants.add(vehicule);
+	}
+	
+	@Override
+	public boolean check() {
+		boolean isDeuxRoues = false;
+		boolean isQuatreRoues = false;
+		for (Vehicule vehicule : participants) {
+			if (vehicule.estDeuxRoues()) {
+				isDeuxRoues = true;
+			} else {
+				isQuatreRoues = true;
+			}
+		}
+		return !(isDeuxRoues && isQuatreRoues);
+	}
+
+	private int deduireCarburant(Vehicule vhc, int tours) {
+		return vhc.getCarburant()-tours;
+	}
+	
+	public void run(int tours) {
+		if (!check()) {
+			System.out.println("Pas de Grand Prix");
+		} else {
+			ArrayList<Vehicule> vhcFranchisLigne = new ArrayList<Vehicule>();
+			for (Vehicule vehicule : participants) {
+				if (deduireCarburant(vehicule, tours)>0) {
+					vhcFranchisLigne.add(vehicule);
+				}
+			}
+			
+			if (vhcFranchisLigne.size() == 0) {
+				System.out.println("Elimination de tous les vehicules");
+			} else {
+				Collections.sort(vhcFranchisLigne);
+				System.out.println("Le gagnant du grand prix est ->\n"+vhcFranchisLigne.get(0));
+			}
+		}
+	}
+}
+
+abstract class Rallye {
+	public abstract boolean check();
 }
 /*******************************************
  * Ne pas modifier apres cette ligne
@@ -108,5 +274,6 @@ public class Course {
         System.out.println("Troisieme  course :");
         gp2.run(11);
         // FIN PARTIE 4
+ 
     }
 }
