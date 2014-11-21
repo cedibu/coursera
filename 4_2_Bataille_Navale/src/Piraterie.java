@@ -1,6 +1,186 @@
 /*******************************************
  * Completez le programme a partir d'ici.
  *******************************************/
+abstract class Navire {
+	private int x;
+	private int y;
+	private int drapeau;
+	private boolean detruit;
+	
+	public Navire(int x, int y, int drapeau) {
+		setX(x);
+		setY(y);
+		this.drapeau = drapeau;
+		this.detruit = false;
+	}
+	
+	public int getX() {
+		return x;
+	}
+	
+	public void setX(int x) {
+		if (x > Piraterie.MAX_X) {
+			this.x = Piraterie.MAX_X;
+		} else if (x < 0) {
+			this.x = 0;
+		} else {
+			this.x = x;
+		}
+	}
+	
+	public int getY() {
+		return y;
+	}
+	
+	public void setY(int y) {
+		if (y > Piraterie.MAX_Y) {
+			this.y = Piraterie.MAX_Y;
+		} else if (y < 0) {
+			this.y = 0;
+		} else {
+			this.y = y;
+		}
+	}
+	
+	public int getDrapeau() {
+		return drapeau;
+	}
+	
+	public boolean estDetruit() {
+		return detruit;
+	}
+	
+	public double distance(Navire autreNavire) {
+		return Math.sqrt(Math.pow(this.x-autreNavire.getX(), 2)+Math.pow(this.y-autreNavire.getY(), 2));
+	}
+	
+	public void avance(int unitsX, int unitsY) {
+		setX(this.x+unitsX);
+		setY(this.y+unitsY);
+	}
+	
+	public void coule() {
+		this.detruit = true;
+	}
+	
+	public String getNom() {
+		return "Bateau";
+	}
+	
+	public void rencontre(Navire autreNavire) {
+		if (this.getDrapeau() != autreNavire.getDrapeau()) {
+			if (distance(autreNavire) < Piraterie.RAYON_RENCONTRE) {
+				combat(autreNavire);
+			}
+		}
+	}
+	
+	public abstract boolean estPacifique();
+	
+	public abstract void combat(Navire autreNavire);
+	
+	public abstract void recoitBoulet(); 
+}
+
+class Pirate extends Navire {
+	private boolean isEndommage;
+	
+	public Pirate(int x, int y, int drapeau, boolean isEndommage) {
+		super(x, y, drapeau);
+		this.isEndommage = isEndommage;
+	}
+	
+	public boolean estEndommage() {
+		return isEndommage;
+	}
+	
+	@Override
+	public String getNom() {
+		return "Bateau pirate";
+	}
+	
+	public String getEtat() {
+		if (estDetruit()) {
+			return "détruit";
+		} else if (estEndommage()) {
+			return "ayant subi des dommages";
+		} else {
+			return "intact";
+		}
+	}
+	
+	@Override
+	public String toString() {
+		return getNom()+" avec drapeau "+getDrapeau()+" en ("+getX()+","+getY()+") -> "+getEtat();
+	}
+
+	@Override
+	public void combat(Navire autreNavire) {
+		if (!autreNavire.estPacifique()) {
+			recoitBoulet();
+		}
+		
+		if (!estPacifique()) {
+			autreNavire.recoitBoulet();
+		}
+	}
+
+	@Override
+	public void recoitBoulet() {
+		if (estEndommage()) {
+			super.coule();
+		} else {
+			isEndommage = true;
+		}
+	}
+	
+	@Override
+	public boolean estPacifique() {
+		return false;
+	}
+}
+
+class Marchand extends Navire {
+	public Marchand(int x, int y, int drapeau) {
+		super(x, y, drapeau);
+	}
+
+	@Override
+	public String getNom() {
+		return "Bateau marchand";
+	}
+	
+	public String getEtat() {
+		if (estDetruit()) {
+			return "détruit";
+		} else {
+			return "intact";
+		}
+	}
+	
+	@Override
+	public boolean estPacifique() {
+		return true;
+	}
+	
+	@Override
+	public String toString() {
+		return getNom()+" avec drapeau "+getDrapeau()+" en ("+getX()+","+getY()+") -> "+getEtat();
+	}
+
+	@Override
+	public void combat(Navire autreNavire) {
+		if (!autreNavire.estPacifique()) {
+			recoitBoulet();
+		}
+	}
+
+	@Override
+	public void recoitBoulet() {
+		super.coule();
+	}
+}
+
 /*******************************************
  * Ne pas modifier apres cette ligne
  * pour pr'eserver les fonctionnalit'es et
