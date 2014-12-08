@@ -1,7 +1,117 @@
+import java.util.ArrayList;
+
 /*******************************************
  * Completez le programme a partir d'ici.
  *******************************************/
+class OptionVoyage {
+	private String nom;
+	private double prix;
+	
+	public OptionVoyage(String nom, double prix) {
+		this.nom = nom;
+		this.prix = prix;
+	}
+	
+	public String getNom() {
+		return this.nom;
+	}
+	
+	public double prix() {
+		return this.prix;
+	}
+	
+	@Override
+	public String toString() {
+		return getNom()+" -> "+prix()+" CHF";
+	}
+}
 
+class Sejour extends OptionVoyage{
+	private int nombreNuits;
+	private double prixParNuit;
+	
+	public Sejour(String nom, double prix) {
+		super(nom, prix);
+	}
+	
+	public Sejour(String nom, double prix, int nombreNuits, double prixParNuit) {
+		super(nom, prix);
+		this.nombreNuits = nombreNuits;
+		this.prixParNuit = prixParNuit;
+	}
+	
+	@Override
+	public double prix() {
+		return (this.nombreNuits * this.prixParNuit) + super.prix();
+	}
+}
+
+class Transport extends OptionVoyage{
+	public final static double TARIF_LONG = 1500.0;
+	public final static double TARIF_BASE = 200.0;
+	private boolean trajetLong;
+	
+	public Transport(String nom, double prix) {
+		this(nom, prix, false);
+	}
+	
+	public Transport(String nom, double prix, boolean trajetLong) {
+		super(nom, prix);
+		this.trajetLong = trajetLong;
+	}
+	
+	@Override
+	public double prix() {
+		if (this.trajetLong) {
+			return TARIF_LONG + super.prix();
+		} else {
+			return TARIF_BASE + super.prix();
+		}
+	}
+}
+
+class KitVoyage {
+	private ArrayList<OptionVoyage> listOptions = new ArrayList<OptionVoyage>();
+	private String depart;
+	private String destination;
+	
+	public KitVoyage(String depart, String destination) {
+		this.depart = depart;
+		this.destination = destination;
+	}
+	
+	public double prix() {
+		double total = 0.0;
+		for (OptionVoyage optionVoyage : listOptions) {
+			total += optionVoyage.prix();
+		}
+		return total;
+	}
+	
+	@Override
+	public String toString() {
+		String str = "Voyage de "+this.depart+" a "+this.destination+", avec pour options :\n";
+		for (OptionVoyage optionVoyage : listOptions) {
+			str += "- "+optionVoyage+"\n";
+		}
+		str += "Prix total : "+prix()+" CHF";
+		return str;
+	}
+	
+	public void ajouterOption(OptionVoyage optionVoyage) {
+		if (optionVoyage != null) {
+			listOptions.add(optionVoyage);
+		}
+	}
+	
+	public void annuler() {
+		listOptions.clear();
+	}
+	
+	public int getNbOptions() {
+		return listOptions.size();
+	}
+}
 /*******************************************
  * Ne pas modifier apres cette ligne
  * pour pr'eserver les fonctionnalit'es et
